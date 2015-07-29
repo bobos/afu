@@ -1,6 +1,7 @@
 var fs = require("fs"),
     app = require('express')();
     http = require('http').Server(app);
+    urlencode = require('urlencode');
 
 var db = {};
 var id = 0;
@@ -9,14 +10,8 @@ var secret = '360a89b6fdbe9571841963e7920e5a09';
 var invitation_template = 'omKLRv7kxNAsoPXuuXUwgmsymLzgcY1ME7w9ORKfSu4';
 
 app.get('/', function(req, res){
-      fs.readFile('/home/ubuntu/nodejs/afu.html', function(err, html) {
-        if (err) {
-            throw err;
-        }
-        res.writeHeader(200, {"Content-Type": "text/html"});
-        res.write(html);
-        res.end();
-    });
+    var redirectUrl = "http://www.ziyueonline.com/initiate";
+    redirect_to_wechat(res, redirectUrl);
 });
 
 function update_db_if_not_there(openid, name, avatar){
@@ -31,7 +26,7 @@ function get_next_id() {
     return id++;
 }
 
-function init_party(openid, nickname, avatar, res) {
+function init_activity(openid, nickname, avatar, res) {
     update_db_if_not_there(openid, nickname, avatar);
     var actid = get_next_id();
     var form='<form action="submit?openid='+openid+'&actid='+actid+'" method="post"> 活动内容blahblahblah <input type="text" name="activity"><br> <input type="submit" value="check"></form>';
@@ -40,7 +35,7 @@ function init_party(openid, nickname, avatar, res) {
     res.end();
 }
 
-function fetch_usr_info(code, res, callback){
+function fetch_usr_info(code, res, opid, actid, callback){
     var request = require('request');
     var openid;
     request.post('https://api.weixin.qq.com/sns/oauth2/access_token', 
@@ -62,17 +57,21 @@ function fetch_usr_info(code, res, callback){
                                function (error, response, body) {
                                  if (!error && response.statusCode == 200) {
                                  var info = JSON.parse(body);
-                                 callback(openid, info.nickname, info.headimgurl, res)}
+                                 if (opid == undefined) 
+                                   callback(openid, info.nickname, info.headimgurl, res);
+                                 else
+                                   callback(openid, info.nickname, info.headimgurl, opid, actid, res);
+                                 }
                               });
                     }
                  }
     );
 }
 
-app.get('/initparty', function(req, res){
-    code = req.param('code')
+app.get('/initiate', function(req, res){
+    var code = req.param('code')
     console.log(code + ' first code');
-    fetch_usr_info(code, res, init_party);
+    fetch_usr_info(code, res, undefined, undefined, init_activity);
 });
 
 app.post('/submit', function(req, res){
@@ -117,14 +116,53 @@ app.post('/submit', function(req, res){
 });
 
 app.get('/attend', function(req, res){
-    // TODO fetch user info here
     var openid = req.query.openid;
     var actid = req.query.actid;
-    var avatar = db[openid]["avatar"];
-    var ret = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><div><img src="'+avatar+'"></div></body></html>'
+    var redirectUrl = "http://www.ziyueonline.com/visit?openid="+openid+"&actid="+actid;
+    redirect_to_wechat(res, redirectUrl);
+});
+
+function redirect_to_wechat(res, redirectUrl) {
+    var encodedUrl = urlencode(redirectUrl);
+    var ret = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><script>window.location.replace("https://open.weixin.qq.com/connect/oauth2/authorize?appid='+appid+'&redirect_uri='+encodedUrl+'&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect");</script></body></html>'
     res.write(ret);
     res.end();
+}
+
+app.get('/visit', function(req, res){
+    var openid = req.query.openid;
+    var actid = req.query.actid;
+    var code = req.param('code')
+    console.log(code + ' visitor code');
+    console.log(actid + ' act id');
+    fetch_usr_info(code, res, openid, actid, visitor_checkin);
 });
+
+// check if an element exists in array using a comparer function
+// comparer : function(currentElement)
+Array.prototype.inArray = function(comparer) { 
+    for(var i=0; i < this.length; i++) { 
+        if(comparer(this[i])) return true; 
+    }
+    return false; 
+}; 
+
+// adds an element to the array if it does not already exist using a comparer 
+// function
+Array.prototype.pushIfNotExist = function(element, comparer) { 
+    if (!this.inArray(comparer)) {
+        this.push(element);
+    }
+}; 
+
+function visitor_checkin(visitorid, name, avatar, opid, actid, res) {
+    db[opid]["friends"].pushIfNotExist(visitorid, function(e) { 
+        return visitorid === e;});
+    update_db_if_not_there(visitorid, name, avatar);
+    var ret = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><h1>accept or decline page</h1></body></html>'
+    res.write(ret);
+    res.end();
+}
 
 http.listen(80, function(){
   console.log('listening on *:80');

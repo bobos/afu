@@ -1,5 +1,5 @@
 var express = require('express');
-var router = express.Router();
+    router = express.Router();
 
 var mongoose = require('mongoose');
 var Users = require('../models/user.js');
@@ -14,7 +14,7 @@ function get_model(req) {
 
 /* GET /resource/users or
    GET /resource/actvs */
-router.get('/:type', function(req, res, next) {
+router.get('/:type', function(req, res) {
   get_model(req).find(function (err, users) {
     if (err) return next(err);
     res.json(users);
@@ -23,7 +23,9 @@ router.get('/:type', function(req, res, next) {
 
 /* POST /users or
    POST /actvs */
-router.post('/:type', function(req, res, next) {
+router.post('/:type', function(req, res) {
+console.log("create "+req.params.type);
+console.log(req.body);
   get_model(req).create(req.body, function (err, post) {
     if (err) return next(err);
     res.json(post);
@@ -32,7 +34,7 @@ router.post('/:type', function(req, res, next) {
 
 /* GET /users/id or
    GET /actvs/id */
-router.get('/:type/:id', function(req, res, next) {
+router.get('/:type/:id', function(req, res) {
   get_model(req).findById(req.params.id, function (err, post) {
     if (err) return next(err);
     res.json(post);
@@ -41,7 +43,7 @@ router.get('/:type/:id', function(req, res, next) {
 
 /* PUT /users/id or
    PUT /actvs/id */
-router.put('/:type/:id', function(req, res, next) {
+router.put('/:type/:id', function(req, res) {
   get_model(req).findByIdAndUpdate(req.params.id, req.body, function (err, post) {
     if (err) return console.log(err);
     res.json(post);
@@ -50,7 +52,7 @@ router.put('/:type/:id', function(req, res, next) {
 
 /* DELETE /users/id or
    DELETE /actvs/id */
-router.delete('/:type/:id', function(req, res, next) {
+router.delete('/:type/:id', function(req, res) {
   get_model(req).findByIdAndRemove(req.params.id, req.body, function (err, post) {
     if (err) return next(err);
     res.json(post);

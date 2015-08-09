@@ -7,9 +7,9 @@ var userSchema = new Schema({
   nickname: String,
   avatar: String,
   friends: [String],
-  activePublicActivities: [Number],
-  activePrivateActivities: [Number],
-  closedActivities: [Number],
+  hostedActvs: [Number],
+  favoredActvs: [Number],
+  acceptedActvs: [Number],
   updated_at: Number,
 });
 

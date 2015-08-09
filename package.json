@@ -7,6 +7,8 @@
     "mongoose": "~4.1.1",
     "ejs": "~2.3.3",
     "debug": "~2.2.0",
-    "body-parser": "~1.13.3"
+    "body-parser": "~1.13.3",
+    "request": "~2.60.0",
+    "urlencode": "~1.0.1"
   }
 }

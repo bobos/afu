@@ -12,7 +12,7 @@
       <input type="text" ng-model="when" placeholder="{{ items.when }}"><br> 
       <input type="text" ng-model="limits" placeholder="{{ items.limits }}"><br> 
       <input type="text" ng-model="descr" placeholder="{{ items.descr }}"><br> 
-      <a href="/attend/<%= OpenId %>/<%= ActId %>"><button ng-click="create(<%= OpenId %>, <%= ActId %>)">create activity</button></a>
+      <a href="/authen/attend/<%= OpenId %>/<%= ActId %>"><button ng-click="create(<%= OpenId %>, <%= ActId %>)">create activity</button></a>
     </script>
     <ng-view></ng-view>
 

@@ -59,7 +59,7 @@ angular.module('createActv', ['ngRoute'])
         controller: 'CreateController'
       })
     
-      .when('/attend/:openid/:actid', {
+      .when('/authen/attend/:openid/:actid', {
         templateUrl: '/activity.html',
         controller: 'PrintController'
      });

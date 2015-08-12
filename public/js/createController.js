@@ -4,6 +4,8 @@ var myItems = { title: 'your title goes here',
                 limits: 'how many buddies can join',
                 descr: 'some more words'};
 
+var result = "error, failed to create";
+
 angular.module('createActv', ['ngRoute'])
   .factory('Items', function(){
     return myItems;
@@ -12,30 +14,50 @@ angular.module('createActv', ['ngRoute'])
   .controller('CreateController', ['$scope', function ($scope) {
     $scope.items = myItems;
 
-    $scope.create = function() {
+    $scope.create = function(openid, actid) {
       myItems.title = $scope.title;
       myItems.when = $scope.when;
       myItems.where = $scope.where;
       myItems.limits = $scope.limits;
       myItems.descr = $scope.descr;
+
+      var Data = {_id: actid,
+                  creator: openid,
+                  title: myItems.title,
+                  when: myItems.when,
+                  where: myItems.where,
+                  attLimits: myItems.limits,
+                  description: myItems.descr,
+                  isActive: true};
+
+      // have to use jquery for post, angular $http is async
+      $.ajax({ 
+              type : "post", 
+              url : "../../resource/actvs", 
+              data : Data,
+              async : false, 
+              success : function(data){ 
+                  result = "activity is created"
+                },
+              error : function(xhr, status, text) {
+                  result = "failed to create activity!"
+                }
+             });  
     }
   }])
   
-  .controller('PrintController', ['$scope', '$routeParams', function ($scope, $routeParams) {
+  .controller('PrintController', ['$scope', '$routeParams', 
+                                  function ($scope, $routeParams) {
     $scope.actv = myItems;
-    var openid = $routeParams.openid;
-    var actid = $routeParams.actid;
-    //TODO
-    // use $http here to post data to DB
+    $scope.result = result;
   }])
   
   .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
     $routeProvider
-      //doesn't work, don't know why
-      //.when('/authen/fetchInfo2create', {
-      //  templateUrl: '/form.html',
-      //  controller: 'CreateController'
-      //})
+      .when('/authen/fetchInfo2create', {
+        templateUrl: '/form.html',
+        controller: 'CreateController'
+      })
     
       .when('/attend/:openid/:actid', {
         templateUrl: '/activity.html',

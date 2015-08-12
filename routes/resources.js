@@ -16,45 +16,43 @@ function get_model(req) {
    GET /resource/actvs */
 router.get('/:type', function(req, res) {
   get_model(req).find(function (err, users) {
-    if (err) return next(err);
+    if (err) res.status(404).send(err);
     res.json(users);
   });
 });
 
-/* POST /users or
-   POST /actvs */
+/* POST /resource/users or
+   POST /resource/actvs */
 router.post('/:type', function(req, res) {
-console.log("create "+req.params.type);
-console.log(req.body);
   get_model(req).create(req.body, function (err, post) {
-    if (err) return next(err);
+    if (err) {console.log(err); res.status(404).send(err);}
     res.json(post);
   });
 });
 
-/* GET /users/id or
-   GET /actvs/id */
+/* GET /resource/users/id or
+   GET /resource/actvs/id */
 router.get('/:type/:id', function(req, res) {
   get_model(req).findById(req.params.id, function (err, post) {
-    if (err) return next(err);
+    if (err) res.status(404).send(err);
     res.json(post);
   });
 });
 
-/* PUT /users/id or
-   PUT /actvs/id */
+/* PUT /resource/users/id or
+   PUT /resource/actvs/id */
 router.put('/:type/:id', function(req, res) {
   get_model(req).findByIdAndUpdate(req.params.id, req.body, function (err, post) {
-    if (err) return console.log(err);
+    if (err) res.status(404).send(err);
     res.json(post);
   });
 });
 
-/* DELETE /users/id or
-   DELETE /actvs/id */
+/* DELETE /resource/users/id or
+   DELETE /resource/actvs/id */
 router.delete('/:type/:id', function(req, res) {
   get_model(req).findByIdAndRemove(req.params.id, req.body, function (err, post) {
-    if (err) return next(err);
+    if (err) res.status(404).send(err);
     res.json(post);
   });
 });

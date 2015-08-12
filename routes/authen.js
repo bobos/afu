@@ -4,7 +4,6 @@ var express = require('express');
     router = express.Router();
     secrets = require('../controller/secrets');
 
-
 function redirect_to_wechat(res, redirectUrl) {
   var encodedUrl = urlencode(redirectUrl);
   res.render('redirect', { title: 'Ziyue', AppId: secrets.appid, EncodedUrl: encodedUrl });

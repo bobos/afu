@@ -6,24 +6,23 @@
   </head>
   <body>
     <!-- Template -->   
-    <div ng-controller="CreateController">
+    <script type="text/ng-template" id="/form.html">
       <input type="text" ng-model="title" placeholder="{{ items.title }}"><br> 
       <input type="text" ng-model="where" placeholder="{{ items.where }}"><br> 
       <input type="text" ng-model="when" placeholder="{{ items.when }}"><br> 
       <input type="text" ng-model="limits" placeholder="{{ items.limits }}"><br> 
       <input type="text" ng-model="descr" placeholder="{{ items.descr }}"><br> 
-      <a href="/attend/<%= OpenId %>/<%= ActId %>"><button ng-click="create()">create activity</button></a>
-    </div>
+      <a href="/attend/<%= OpenId %>/<%= ActId %>"><button ng-click="create(<%= OpenId %>, <%= ActId %>)">create activity</button></a>
+    </script>
     <ng-view></ng-view>
 
     <script type="text/ng-template" id="/activity.html">
-      <h1>activity is created! Share to your friends NOW!</h1>
-      </div>
+      {{ actv.title }} </br>
+      {{ actv.where }} </br>
+      {{ actv.when }} </br>
+      {{ actv.limits }} </br>
+      {{ actv.descr }} </br>
+      <h1>result: {{ result }}</h1>
     </script>
   </body>
 </html>
-
-
-<!--
-  <form action="actvs?openid=<%= OpenId %>&actid=<%= ActId %>" method="post"> 
--->

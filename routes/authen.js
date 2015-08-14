@@ -29,11 +29,14 @@ function fetch_usr_info(code, res, actvOwnerId, actid, module){
                        request.get(options,
                                function (error, response, body) {
                                  var info = JSON.parse(body);
+                                 console.log(info.province + " province");
+                                 console.log(info.city + " city");
+                                 var lokation = info.province + info.city;
                                  if (!error && response.statusCode == 200) {
                                    if (actvOwnerId == undefined) 
-                                     module.callback(openid, info.nickname, info.headimgurl, res);
+                                     module.callback(openid, info.nickname, info.headimgurl, lokation, res);
                                    else
-                                     module.callback(openid, info.nickname, info.headimgurl, actvOwnerId, actid, res);
+                                     module.callback(openid, info.nickname, info.headimgurl, lokation, actvOwnerId, actid, res);
                                  }
                               });
                    }

@@ -8,6 +8,9 @@ var activitySchema = new Schema({
   title: String,
   when: String,
   where: String,
+  city: String,
+  publicity: Boolean,
+  type: String,
   attLimits: Number,
   attendees: [String], //openid
   description: String,

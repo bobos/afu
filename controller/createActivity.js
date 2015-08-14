@@ -5,7 +5,7 @@ function get_next_id() {
   return id++;
 }
 
-function callback(openid, nickname, avatar, res) {
+function callback(openid, nickname, avatar, city, res) {
   db.get_user(openid, res,
               function (userInfo, resp) {
                 // update user info hour-basis
@@ -16,7 +16,8 @@ function callback(openid, nickname, avatar, res) {
                     response.render('create', 
                                     { title: nickname+' wants to have some fun', 
                                       OpenId: openid, 
-                                      ActId: actid });
+                                      ActId: actid,
+                                      City: city });
                    }
                 if ( userInfo == 'null' ) {
                   data = {

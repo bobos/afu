@@ -2,7 +2,10 @@ var myItems = { title: 'your title goes here',
                 when: 'when do you like to have the activity',
                 where: 'where to have it',
                 limits: 'how many buddies can join',
-                descr: 'some more words'};
+                city: 'city',
+                type: 'activity type',
+                descr: 'some more words',
+                publicity: false };
 
 var result = "error, failed to create";
 
@@ -13,13 +16,40 @@ angular.module('createActv', ['ngRoute'])
 
   .controller('CreateController', ['$scope', function ($scope) {
     $scope.items = myItems;
+    $scope.actType = [{
+                       id: 1,
+                       type: '吃饭'
+                   }, {
+                       id: 2,
+                       type: '唱k'
+                   }, {
+                       id: 3,
+                       type: '户外'
+                   }, {
+                       id: 4,
+                       type: '其他'
+                   }];
 
-    $scope.create = function(openid, actid) {
+    $scope.typeOfAct = $scope.actType[0].type;
+    myItems.type = $scope.actType[0].type;
+    $scope.isPublic = myItems.publicity;
+    $scope.change = function() {
+    }
+ 
+    $scope.check = function(chk) {
+      $scope.isPublic = !chk;
+    }
+
+    $scope.create = function(openid, actid, city) {
+      if ( $scope.city == undefined ) $scope.city = city;
       myItems.title = $scope.title;
       myItems.when = $scope.when;
       myItems.where = $scope.where;
       myItems.limits = $scope.limits;
       myItems.descr = $scope.descr;
+      myItems.publicity = $scope.isPublic;
+      myItems.city = $scope.city;
+      myItems.type = $scope.typeOfAct;
 
       var Data = {_id: actid,
                   creator: openid,
@@ -27,7 +57,10 @@ angular.module('createActv', ['ngRoute'])
                   when: myItems.when,
                   where: myItems.where,
                   attLimits: myItems.limits,
+                  city: myItems.city,
+                  type: myItems.type,
                   description: myItems.descr,
+                  publicity: myItems.publicity,
                   isActive: true};
 
       // have to use jquery for post, angular $http is async

@@ -24,6 +24,7 @@ router.get('/:type', function(req, res) {
 /* POST /resource/users or
    POST /resource/actvs */
 router.post('/:type', function(req, res) {
+console.log(req.body);
   get_model(req).create(req.body, function (err, post) {
     if (err) {console.log(err); res.status(404).send(err);}
     res.json(post);

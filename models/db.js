@@ -45,7 +45,18 @@ function create_actv(jsonData, res, callback) {
   });
 }
 
+function get_actv(actid, res, callback) {
+  var options = {url: 'http://localhost/resource/actvs/'+actid};
+  request.get(options,
+              function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                  callback(body, res);
+                }
+              });
+}
+
 exports.get_user = get_user;
 exports.create_user = create_user;
 exports.update_user_async = update_user_async;
 exports.create_actv = create_actv;
+exports.get_actv = get_actv;

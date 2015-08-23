@@ -52,12 +52,12 @@ router.get('/guide2create', function(req, res) {
 });
 
 /*
- * GET /authen/attend/ownerid/actid
+ * GET /authen/accept/ownerid/actid
  */
-router.get('/attend/:ownerid/:actid', function(req, res){
+router.get('/accept/:ownerid/:actid', function(req, res){
   var ownerid = req.params.ownerid;
   var actid = req.params.actid;
-  var redirectUrl = "http://www.ziyueonline.com/authen/fetchInfo2attend/"+ownerid+"/"+actid;
+  var redirectUrl = "http://www.ziyueonline.com/authen/fetchInfo2accept/"+ownerid+"/"+actid;
   redirect_to_wechat(res, redirectUrl);
 });
 
@@ -72,16 +72,16 @@ router.get('/fetchInfo2create', function(req, res) {
 });
 
 /*
- * GET /authen/fetchInfo2attend/ownerid/actid
+ * GET /authen/fetchInfo2accept/ownerid/actid
  */
-router.get('/fetchInfo2attend/:ownerid/:actid', function(req, res) {
+router.get('/fetchInfo2accept/:ownerid/:actid', function(req, res) {
   var code = req.param('code')
   var ownerid = req.params.ownerid;
   var actid = req.params.actid;
 
-  console.log(code + ' first code');
-  var attend = require('../controller/attendActivity');
-  fetch_usr_info(code, res, ownerid, actid, attend);
+  console.log(code + ' second code');
+  var accept = require('../controller/acceptActivity');
+  fetch_usr_info(code, res, ownerid, actid, accept);
 });
 
 module.exports = router;

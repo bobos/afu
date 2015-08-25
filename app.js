@@ -36,6 +36,5 @@ app.use(bodyParser.json());
 app.use('/resource', resources);
 app.use('/authen', authen);
 app.use('/actvs', actvs);
-app.use('/attend', attend);
 
 module.exports = app;

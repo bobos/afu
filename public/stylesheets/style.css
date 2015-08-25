@@ -3,6 +3,12 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
-a {
-  color: #00B7FF;
+img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.avatar {
+    height: 1em;
+    width: 1em;
 }

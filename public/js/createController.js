@@ -40,7 +40,7 @@ angular.module('createActv', ['ngRoute'])
       $scope.isPublic = !chk;
     }
 
-    $scope.create = function(openid, actid, city) {
+    $scope.create = function(openid, actid, city, name, avatar) {
       if ( $scope.city == undefined ) $scope.city = city;
       myItems.title = $scope.title;
       myItems.when = $scope.when;
@@ -57,6 +57,8 @@ angular.module('createActv', ['ngRoute'])
                   when: myItems.when,
                   where: myItems.where,
                   attLimits: myItems.limits,
+                  attendeeIds: [openid],
+                  attendees: [{name: name, avatar: avatar}],
                   city: myItems.city,
                   type: myItems.type,
                   description: myItems.descr,
@@ -92,7 +94,7 @@ angular.module('createActv', ['ngRoute'])
         controller: 'CreateController'
       })
     
-      .when('/attend/:openid/:actid', {
+      .when('/actvs/:openid/:actid', {
         templateUrl: '/activity.html',
         controller: 'PrintController'
      });

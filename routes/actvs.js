@@ -1,16 +1,14 @@
 var express = require('express');
     router = express.Router();
+    render = require('../controller/renderActivity');
 
 /*
-  POST /actvs/
+  GET /actvs/openid/actid
 */
-router.post('/', function(req, res){
-    var submit = require('../controller/submitActivity');
-    var openid = req.param('openid');
-    var actid = req.param('actid');
-    //var openid = req.query.openid;
-    //var actid = req.query.actid;
-    submit.submit(openid, actid, req.body, res);
+router.get('/attend/:openid/:actid', function(req, res){
+    var openid = req.params.openid;
+    var actid = req.params.actid;
+    render.render_page(openid, actid, res);
 });
 
 module.exports = router;

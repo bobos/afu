@@ -3,13 +3,15 @@ var express = require('express');
     request = require('request');
     router = express.Router();
     secrets = require('../controller/secrets');
+    authen_cb = require('../controller/authen_callback');
+    cons = require('../controller/cons');
 
 function redirect_to_wechat(res, redirectUrl) {
   var encodedUrl = urlencode(redirectUrl);
   res.render('redirect', { title: 'Ziyue', AppId: secrets.appid, EncodedUrl: encodedUrl });
 }
 
-function fetch_usr_info(code, res, actvOwnerId, actid, module){
+function fetch_usr_info(code, res, route, actvOwnerId, actid){
     var openid;
     request.post('https://api.weixin.qq.com/sns/oauth2/access_token', 
                  {form: {'appid': secrets.appid,
@@ -33,10 +35,14 @@ function fetch_usr_info(code, res, actvOwnerId, actid, module){
                                  console.log(info.city + " city");
                                  var lokation = info.province + info.city;
                                  if (!error && response.statusCode == 200) {
-                                   if (actvOwnerId == undefined) 
-                                     module.callback(openid, info.nickname, info.headimgurl, lokation, res);
-                                   else
-                                     module.callback(openid, info.nickname, info.headimgurl, lokation, actvOwnerId, actid, res);
+                                   var data = {openId: openid,
+                                               nickName: info.nickname,
+                                               avatar: info.headimgurl,
+                                               city: lokation,
+                                               ownerId: actvOwnerId,
+                                               actId: actid,
+                                               route: route};
+                                   authen_cb.callback(data, res);
                                  }
                               });
                    }
@@ -67,8 +73,7 @@ router.get('/accept/:ownerid/:actid', function(req, res){
 router.get('/fetchInfo2create', function(req, res) {
   var code = req.param('code')
   console.log(code + ' first code');
-  var create = require('../controller/createActivity');
-  fetch_usr_info(code, res, undefined, undefined, create);
+  fetch_usr_info(code, res, cons.CREATE);
 });
 
 /*
@@ -78,10 +83,8 @@ router.get('/fetchInfo2accept/:ownerid/:actid', function(req, res) {
   var code = req.param('code')
   var ownerid = req.params.ownerid;
   var actid = req.params.actid;
-
   console.log(code + ' second code');
-  var accept = require('../controller/acceptActivity');
-  fetch_usr_info(code, res, ownerid, actid, accept);
+  fetch_usr_info(code, res, cons.ACCEPT, ownerid, actid);
 });
 
 module.exports = router;

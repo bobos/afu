@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 
 var Schema = mongoose.Schema;
+var attendeeSchema = new Schema({ name: String, avatar: String });
 
 var activitySchema = new Schema({
   _id: Number,
@@ -12,7 +13,8 @@ var activitySchema = new Schema({
   publicity: Boolean,
   type: String,
   attLimits: Number,
-  attendees: [String], //openid
+  attendeeIds: [String], //openid
+  attendees: [attendeeSchema],
   description: String,
   isActive: Boolean,
   spent: Number,

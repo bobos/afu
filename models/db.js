@@ -18,7 +18,7 @@ function get_user(openid, res, callback) {
   request.get(options,
               function (error, response, body) {
                 if (!error && response.statusCode == 200) {
-                  callback(body, res);
+                  callback(JSON.parse(body), res);
                 }
               });
 }  
@@ -32,6 +32,18 @@ function update_user_async(openid, jsonData) {
           function (error, response, body) {
             if (!error && response.statusCode == 200)
               console.log("user updated");
+          });
+}
+
+function update_actv_async(actId, jsonData) {
+  var options = {uri: 'http://localhost/resource/actvs/'+actId,
+                 method: 'PUT',
+                 json: jsonData};
+  
+  request(options, 
+          function (error, response, body) {
+            if (!error && response.statusCode == 200)
+              console.log("actv updated");
           });
 }
 
@@ -50,7 +62,7 @@ function get_actv(actid, res, callback) {
   request.get(options,
               function (error, response, body) {
                 if (!error && response.statusCode == 200) {
-                  callback(body, res);
+                  callback(JSON.parse(body), res);
                 }
               });
 }
@@ -58,5 +70,6 @@ function get_actv(actid, res, callback) {
 exports.get_user = get_user;
 exports.create_user = create_user;
 exports.update_user_async = update_user_async;
+exports.update_actv_async = update_actv_async;
 exports.create_actv = create_actv;
 exports.get_actv = get_actv;

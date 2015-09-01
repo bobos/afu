@@ -68,6 +68,18 @@ router.get('/accept/:ownerid/:actid', function(req, res){
 });
 
 /*
+ * GET /authen/favor/ownerid/actid
+ */
+router.get('/favor/:ownerid/:actid', function(req, res){
+  var ownerid = req.params.ownerid;
+  var actid = req.params.actid;
+  var redirectUrl = "http://www.ziyueonline.com/authen/fetchInfo2favor/"+ownerid+"/"+actid;
+  redirect_to_wechat(res, redirectUrl);
+});
+
+/*
+
+/*
  * GET /authen/fetchInfo2create
  */
 router.get('/fetchInfo2create', function(req, res) {
@@ -85,6 +97,17 @@ router.get('/fetchInfo2accept/:ownerid/:actid', function(req, res) {
   var actid = req.params.actid;
   console.log(code + ' second code');
   fetch_usr_info(code, res, cons.ACCEPT, ownerid, actid);
+});
+
+/*
+ * GET /authen/fetchInfo2favor/ownerid/actid
+ */
+router.get('/fetchInfo2favor/:ownerid/:actid', function(req, res) {
+  var code = req.param('code')
+  var ownerid = req.params.ownerid;
+  var actid = req.params.actid;
+  console.log(code + ' second code');
+  fetch_usr_info(code, res, cons.FAVOR, ownerid, actid);
 });
 
 module.exports = router;

@@ -78,6 +78,11 @@ angular.module('createActv', ['ngRoute'])
                   result = "failed to create activity!"
                 }
              });  
+
+      $.get("../../actvs/update/"+openid+"/"+actid,
+            function(data, status){
+              alert("Data: " + data + "\nStatus: " + status);
+            });
     }
   }])
   

@@ -3,16 +3,12 @@ var db = require('../models/db');
 function render_page(openid, actid, res) {
   db.get_actv(actid, res,
               function (actvInfo, resp) {
-                if ( actvInfo.attendeeIds.indexOf(openid) == -1 ) 
-                  resp.render('attendActivity', 
-                              { title: actvInfo.title, 
-                                OpenId: openid, 
-                                ActId: actid,
-                                attendees: attendee_list(actvInfo.attendees) });
-                else
-                  resp.render('viewActivity', 
-                              { title: actvInfo.title, 
-                                attendees: attendee_list(actvInfo.attendees) });
+console.log('actv: '+actvInfo.attendeeIds);
+                resp.render('attendActivity', 
+                            { title: actvInfo.title, 
+                              OpenId: openid, 
+                              ActId: actid,
+                              attendees: attendee_list(actvInfo.attendees) });
               })
 }
 

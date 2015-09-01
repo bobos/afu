@@ -1,4 +1,4 @@
-var secrets = require("secrets");
+var secrets = require("./secrets");
 var appid = secrets.appid;
 var secret = secrets.secret;
 var request = require('request');

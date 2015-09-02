@@ -17,7 +17,7 @@ function get_model(req) {
 router.get('/:type', function(req, res) {
   get_model(req).find(function (err, users) {
     if (err) res.status(404).send(err);
-    res.json(users);
+    else res.json(users);
   });
 });
 
@@ -27,7 +27,7 @@ router.post('/:type', function(req, res) {
 console.log(req.body);
   get_model(req).create(req.body, function (err, post) {
     if (err) {console.log(err); res.status(404).send(err);}
-    res.json(post);
+    else res.json(post);
   });
 });
 
@@ -36,7 +36,7 @@ console.log(req.body);
 router.get('/:type/:id', function(req, res) {
   get_model(req).findById(req.params.id, function (err, post) {
     if (err) res.status(404).send(err);
-    res.json(post);
+    else res.json(post);
   });
 });
 
@@ -45,7 +45,7 @@ router.get('/:type/:id', function(req, res) {
 router.put('/:type/:id', function(req, res) {
   get_model(req).findByIdAndUpdate(req.params.id, req.body, function (err, post) {
     if (err) res.status(404).send(err);
-    res.json(post);
+    else res.json(post);
   });
 });
 
@@ -54,7 +54,7 @@ router.put('/:type/:id', function(req, res) {
 router.delete('/:type/:id', function(req, res) {
   get_model(req).findByIdAndRemove(req.params.id, req.body, function (err, post) {
     if (err) res.status(404).send(err);
-    res.json(post);
+    else res.json(post);
   });
 });
 

@@ -14,6 +14,21 @@ router.get('/:openid/:actid', function(req, res){
 });
 
 /*
+  POST /actvs
+*/
+router.post('/', function(req, res){
+  db.create_actv(req.body, res, 
+                 function (resp){
+                   if ( resp == undefined ) 
+                     res.status(404).send('update db failed');
+                   else {
+                     res.write('ok');
+                     res.end()
+                   }
+                 }) 
+});
+
+/*
   GET /actvs/update/openid/actid
 */
 router.get('/update/:openid/:actid', function(req, res){
@@ -22,7 +37,8 @@ router.get('/update/:openid/:actid', function(req, res){
   db.get_user(openid, res,
               function (userInfo, resp) {
                 var ret = utils.pushArray(userInfo.hostedActvs, actid);
-                db.update_user_async(openid, {hostedActvs: ret.array});
+                if ( ret.ret ) 
+                  db.update_user_async(openid, {hostedActvs: ret.array});
               });
 });
 

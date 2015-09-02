@@ -10,6 +10,8 @@ function create_user(jsonData, res, callback) {
   request(options, function (error, response, body) {
     if (!error && response.statusCode == 200)
       callback(res);
+    else
+      callback();
   });
 }
 
@@ -17,9 +19,10 @@ function get_user(openid, res, callback) {
   var options = {url: 'http://localhost/resource/users/'+openid};
   request.get(options,
               function (error, response, body) {
-                if (!error && response.statusCode == 200) {
+                if (!error && response.statusCode == 200) 
                   callback(JSON.parse(body), res);
-                }
+                else
+                  callback();
               });
 }  
 
@@ -54,6 +57,8 @@ function create_actv(jsonData, res, callback) {
   request(options, function (error, response, body) {
       if (!error && response.statusCode == 200)
         callback(res);
+      else
+        callback();
   });
 }
 
@@ -61,9 +66,10 @@ function get_actv(actid, res, callback) {
   var options = {url: 'http://localhost/resource/actvs/'+actid};
   request.get(options,
               function (error, response, body) {
-                if (!error && response.statusCode == 200) {
+                if (!error && response.statusCode == 200)
                   callback(JSON.parse(body), res);
-                }
+                else
+                  callback();
               });
 }
 

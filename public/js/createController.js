@@ -68,21 +68,20 @@ angular.module('createActv', ['ngRoute'])
       // have to use jquery for post, angular $http is async
       $.ajax({ 
               type : "post", 
-              url : "../../resource/actvs", 
+              url : "../../actvs", 
               data : Data,
               async : false, 
               success : function(data){ 
+                  $.get("../../actvs/update/"+openid+"/"+actid,
+                        function(data, status){
+                          alert("Data: " + data + "\nStatus: " + status);
+                        });
                   result = "activity is created"
                 },
               error : function(xhr, status, text) {
                   result = "failed to create activity!"
                 }
              });  
-
-      $.get("../../actvs/update/"+openid+"/"+actid,
-            function(data, status){
-              alert("Data: " + data + "\nStatus: " + status);
-            });
     }
   }])
   

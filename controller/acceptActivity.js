@@ -86,7 +86,7 @@ function send_accept_notify(ownerId, actId, name) {
              topcolor:"#FF0000",
              data:{
                      first: {
-                               value:name+"accept your acvitity",
+                               value:name+"接受了你的活动邀请",
                                color:"#173177"
                               },
                      remark:{

@@ -6,6 +6,7 @@ var userSchema = new Schema({
   _id: String, 
   nickname: String,
   avatar: String,
+  city: String,
   friends: [String],
   hostedActvs: [Number],
   favoredActvs: [Number],

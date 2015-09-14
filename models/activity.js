@@ -18,6 +18,7 @@ var activitySchema = new Schema({
   description: String,
   isActive: Boolean,
   spent: Number,
+  open: Boolean,
 });
 
 // the collection name should be generated based on previous table size

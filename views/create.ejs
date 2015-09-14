@@ -15,7 +15,7 @@
       <input type="text" ng-model="city" placeholder="<%= City %>"><br> 
       <select ng-model="typeOfAct" ng-change="change()" ng-options="option.type as option.type for option in actType"></select>
       <label><input type="checkbox" ng-model="isPublic" ng-click="check(isPublic)" />Public</label> 
-      <a href="/actvs/<%= OpenId %>/<%= ActId %>"><button ng-click='create("<%= OpenId %>", <%= ActId %>, "<%= City %>", "<%= Name %>", "<%= Avatar %>")'>create activity</button></a>
+      <a href="/actvs/attend/<%= OpenId %>/<%= ActId %>"><button ng-click='create("<%= OpenId %>", <%= ActId %>, "<%= City %>", "<%= Name %>", "<%= Avatar %>")'>create activity</button></a>
     </script>
     <ng-view></ng-view>
 

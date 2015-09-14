@@ -50,10 +50,10 @@ function fetch_usr_info(code, res, route, actvOwnerId, actid){
 }
 
 /*
- * GET /authen/guide2create
+ * GET /authen/login
  */
-router.get('/guide2create', function(req, res) {
-  var redirectUrl = "http://www.ziyueonline.com/authen/fetchInfo2create";
+router.get('/login', function(req, res) {
+  var redirectUrl = "http://www.ziyueonline.com/authen/fetchInfo2login";
   redirect_to_wechat(res, redirectUrl);
 });
 
@@ -78,14 +78,12 @@ router.get('/favor/:ownerid/:actid', function(req, res){
 });
 
 /*
-
-/*
- * GET /authen/fetchInfo2create
+ * GET /authen/fetchInfo2login
  */
-router.get('/fetchInfo2create', function(req, res) {
+router.get('/fetchInfo2login', function(req, res) {
   var code = req.param('code')
   console.log(code + ' first code');
-  fetch_usr_info(code, res, cons.CREATE);
+  fetch_usr_info(code, res, cons.HOME);
 });
 
 /*

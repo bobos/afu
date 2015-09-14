@@ -63,16 +63,17 @@ angular.module('createActv', ['ngRoute'])
                   type: myItems.type,
                   description: myItems.descr,
                   publicity: myItems.publicity,
-                  isActive: true};
+                  isActive: true,
+                  open: true};
 
       // have to use jquery for post, angular $http is async
       $.ajax({ 
               type : "post", 
-              url : "../../actvs", 
+              url : "../../../actvs", 
               data : Data,
               async : false, 
               success : function(data){ 
-                  $.get("../../actvs/update/"+openid+"/"+actid,
+                  $.get("../../../actvs/update/"+openid+"/"+actid,
                         function(data, status){
                           alert("Data: " + data + "\nStatus: " + status);
                         });
@@ -93,12 +94,12 @@ angular.module('createActv', ['ngRoute'])
   
   .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
     $routeProvider
-      .when('/authen/fetchInfo2create', {
+      .when('/actvs/create/:openid', {
         templateUrl: '/form.html',
         controller: 'CreateController'
       })
     
-      .when('/actvs/:openid/:actid', {
+      .when('/actvs/attend/:openid/:actid', {
         templateUrl: '/activity.html',
         controller: 'PrintController'
      });

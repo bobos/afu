@@ -50,6 +50,19 @@ function update_actv_async(actId, jsonData) {
           });
 }
 
+function update_actv(actId, jsonData, res, callback) {
+  var options = {uri: 'http://localhost/resource/actvs/'+actId,
+                 method: 'PUT',
+                 json: jsonData};
+  
+  request(options, function (error, response, body) {
+      if (!error && response.statusCode == 200)
+        callback(JSON.parse(body), res);
+      else
+        callback();
+  })
+}
+
 function create_actv(jsonData, res, callback) {
   var options = {url: 'http://localhost/resource/actvs/',
                  method: 'POST',
@@ -77,5 +90,6 @@ exports.get_user = get_user;
 exports.create_user = create_user;
 exports.update_user_async = update_user_async;
 exports.update_actv_async = update_actv_async;
+exports.update_actv = update_actv;
 exports.create_actv = create_actv;
 exports.get_actv = get_actv;

@@ -1,0 +1,10 @@
+  <body>
+      <script>
+        var actvs ="<%= Actvs %>".split(','); 
+        var html = '';
+        for (var i = 0; i < actvs.length; i++) {
+          html += '<a href="/actvs/<%= OpenId %>/"'+actvs[i]+'>活动</a><br>'
+        }
+        document.write(html);
+      </script>
+  </body>

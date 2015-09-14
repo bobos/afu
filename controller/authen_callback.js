@@ -14,6 +14,7 @@ function callback(data, res) {
                     _id: data.openId,
                     nickname: data.nickName,
                     avatar: data.avatar,
+                    city: data.city,
                     update_at: updateTime};
                   db.create_user(usrData, resp, respFun)
                 }
@@ -34,8 +35,8 @@ function get_cb(route) {
     case cons.FAVOR:
       var module = require('./acceptActivity');
       break;
-    case cons.CREATE:
-      var module = require('./createActivity');
+    case cons.HOME:
+      var module = require('./home');
       break;
   }
   return module

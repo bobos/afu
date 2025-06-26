@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小红花管理系统 - LocalStorage版</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fff2f2, #ffeded);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background-color: white;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(255, 100, 100, 0.15);
+            overflow: hidden;
+            margin: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff7b7b, #ff9d9d);
+            color: white;
+            text-align: center;
+            padding: 25px 20px;
+            border-radius: 25px 25px 0 0;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .storage-status {
+            padding: 15px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            text-align: center;
+            font-size: 15px;
+            color: #495057;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .storage-status .connected {
+            color: #28a745;
+        }
+
+        .tabs {
+            display: flex;
+            background-color: white;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 10;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 18px 0;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+            position: relative;
+            background-color: #f9f9f9;
+            color: #888;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            color: #ff6b6b;
+            background-color: white;
+            border-bottom: 3px solid #ff6b6b;
+            box-shadow: 0 2px 5px rgba(255, 107, 107, 0.3);
+            transform: translateY(1px);
+        }
+
+        .tab:hover:not(.active) {
+            background-color: #fff4f4;
+            color: #ff7b7b;
+        }
+
+        .tab-indicator {
+            position: absolute;
+            height: 3px;
+            background: #ff6b6b;
+            bottom: -1px;
+            transition: left 0.4s ease, width 0.4s ease;
+            z-index: 1;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 25px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .flower-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .name-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ff6b6b;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(255, 107, 107, 0.2);
+        }
+
+        .flower-count-area {
+            display: flex;
+            align-items: center;
+            position: relative;
+            margin-bottom: 5px;
+        }
+
+        .flower-count {
+            font-size: 76px;
+            font-weight: 700;
+            color: #ff6b6b;
+            margin: 0 15px;
+            position: relative;
+            text-shadow: 0 3px 8px rgba(255, 100, 100, 0.2);
+        }
+
+        .fa-flower {
+            font-size: 58px;
+            color: #ff6b6b;
+            animation: pulse 2s infinite;
+        }
+
+        .fa-flower.left {
+            margin-right: 10px;
+        }
+
+        .fa-flower.right {
+            margin-left: 10px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border-radius: 60px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            min-width: 160px;
+            justify-content: center;
+        }
+
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn-decrease {
+            background: linear-gradient(135deg, #ff9a3d, #ff6b6b);
+            color: white;
+        }
+
+        .btn-increase {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+        }
+
+        .btn-storage {
+            background: linear-gradient(135deg, #5b6dcd, #3b4ab0);
+            color: white;
+        }
+
+        .btn-storage:hover {
+            background: linear-gradient(135deg, #6a7bd5, #4a59c0);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+            filter: brightness(105%);
+        }
+
+        .history {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px dashed #eee;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .history-title {
+            font-size: 20px;
+            color: #666;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .record-count {
+            background: linear-gradient(135deg, #ff7b7b, #ff5e5e);
+            color: white;
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 14px;
+        }
+
+        .history-list {
+            max-height: 280px;
+            overflow-y: auto;
+            padding: 5px 10px;
+        }
+
+        .history-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .history-list::-webkit-scrollbar-track {
+            background: #f9f9f9;
+            border-radius: 10px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: #ffcccc;
+            border-radius: 10px;
+        }
+
+        .history-item {
+            padding: 14px 18px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            transition: all 0.3s;
+            border-left: 4px solid;
+        }
+
+        .history-item.add {
+            border-left-color: #4CAF50;
+        }
+
+        .history-item.deduct {
+            border-left-color: #ff5252;
+        }
+
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .history-type {
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .add .history-type {
+            background-color: #e8f5e9;
+            color: #4CAF50;
+        }
+
+        .deduct .history-type {
+            background-color: #ffebee;
+            color: #f44336;
+        }
+
+        .history-time {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .history-reason {
+            font-size: 16px;
+            margin-bottom: 6px;
+            color: #555;
+        }
+
+        .history-amount {
+            font-weight: 700;
+            font-size: 18px;
+            align-self: flex-end;
+        }
+
+        .history-amount.add {
+            color: #4CAF50;
+        }
+
+        .history-amount.deduct {
+            color: #f44336;
+        }
+
+        .no-history {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            font-style: italic;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 18px;
+            padding: 32px;
+            width: 90%;
+            max-width: 450px;
+            position: relative;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            animation: scaleIn 0.4s ease;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-title {
+            text-align: center;
+            margin-bottom: 28px;
+            color: #ff6b6b;
+            font-size: 26px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #555;
+            font-size: 16px;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            color: #555;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            height: 80px;
+            resize: vertical;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: #ff7b7b;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 123, 123, 0.2);
+        }
+
+        .password-input {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 18px;
+            top: 14px;
+            cursor: pointer;
+            color: #999;
+            font-size: 17px;
+            background: none;
+            border: none;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 18px;
+            gap: 12px;
+        }
+
+        .btn-modal {
+            padding: 14px 26px;
+            border-radius: 50px;
+            font-size: 17px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .btn-cancel {
+            background-color: #f5f5f5;
+            color: #777;
+        }
+
+        .btn-cancel:hover {
+            background-color: #eaeaea;
+        }
+
+        .btn-confirm {
+            background: linear-gradient(135deg, #ff7b7b, #ff5e5e);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 123, 123, 0.3);
+        }
+
+        .btn-confirm:hover {
+            filter: brightness(110%);
+            transform: translateY(-2px);
+        }
+
+        .alert {
+            padding: 16px;
+            margin-top: 18px;
+            border-radius: 12px;
+            display: none;
+            font-size: 15px;
+        }
+
+        .alert-info {
+            background-color: #e8f4fd;
+            border: 1px solid #b8dafc;
+            color: #1e6ec7;
+        }
+
+        .alert-success {
+            background-color: #f0fff0;
+            border: 1px solid #c8e6c9;
+            color: #4CAF50;
+        }
+
+        .alert-error {
+            background-color: #ffeded;
+            border: 1px solid #ffcccc;
+            color: #ff5252;
+        }
+
+        .btn-toolbar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                border-radius: 20px;
+            }
+            
+            .header {
+                padding: 20px 15px;
+            }
+            
+            .tab {
+                padding: 16px 0;
+                font-size: 16px;
+            }
+            
+            .tab-content {
+                padding: 25px 15px;
+            }
+            
+            .flower-count {
+                font-size: 68px;
+            }
+            
+            .fa-flower {
+                font-size: 50px;
+            }
+            
+            .actions {
+                gap: 12px;
+            }
+            
+            .btn {
+                min-width: 140px;
+                padding: 13px 20px;
+                font-size: 15px;
+            }
+            
+            .modal-content {
+                padding: 25px;
+            }
+
+            .history-item {
+                padding: 12px 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 280px;
+            }
+            
+            .flower-count-area {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .fa-flower {
+                margin: 8px 0;
+            }
+
+            .modal-footer {
+                flex-direction: column;
+            }
+
+            .history-item {
+                font-size: 14px;
+            }
+            
+            .btn-toolbar {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-award"></i> 小红花管理系统</h1>
+            <p>本地存储版本 - 数据保存在浏览器中</p>
+        </div>
+        
+        <div class="storage-status">
+            <i class="fas fa-database"></i>
+            <span>数据存储状态: <span id="storage-status" class="connected">已保存</span></span>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="nadine">Nadine</div>
+            <div class="tab" data-tab="naomi">Naomi</div>
+            <div class="tab-indicator" id="tab-indicator"></div>
+        </div>
+        
+        <!-- Nadine Tab Content -->
+        <div id="nadine-content" class="tab-content active">
+            <div class="flower-display">
+                <div class="name-title">Nadine的小红花</div>
+                <div class="flower-count-area">
+                    <i class="fas fa-flower left"></i>
+                    <div class="flower-count" id="nadine-count">0</div>
+                    <i class="fas fa-flower right"></i>
+                </div>
+                <div class="action-area">
+                    <div class="actions">
+                        <button class="btn btn-decrease" onclick="showDeductModal('nadine')">
+                            <i class="fas fa-minus-circle"></i> 扣小红花
+                        </button>
+                        <button class="btn btn-increase" onclick="showAddModal('nadine')">
+                            <i class="fas fa-plus-circle"></i> 加小红花
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="history">
+                <div class="history-header">
+                    <div class="history-title">
+                        <i class="fas fa-history"></i> 最近操作记录
+                        <span class="record-count">最近5次</span>
+                    </div>
+                </div>
+                <div class="history-list" id="nadine-history">
+                    <div class="no-history">正在加载数据...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Naomi Tab Content -->
+        <div id="naomi-content" class="tab-content">
+            <div class="flower-display">
+                <div class="name-title">Naomi的小红花</div>
+                <div class="flower-count-area">
+                    <i class="fas fa-flower left"></i>
+                    <div class="flower-count" id="naomi-count">0</div>
+                    <i class="fas fa-flower right"></i>
+                </div>
+                <div class="action-area">
+                    <div class="actions">
+                        <button class="btn btn-decrease" onclick="showDeductModal('naomi')">
+                            <i class="fas fa-minus-circle"></i> 扣小红花
+                        </button>
+                        <button class="btn btn-increase" onclick="showAddModal('naomi')">
+                            <i class="fas fa-plus-circle"></i> 加小红花
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="history">
+                <div class="history-header">
+                    <div class="history-title">
+                        <i class="fas fa-history"></i> 最近操作记录
+                        <span class="record-count">最近5次</span>
+                    </div>
+                </div>
+                <div class="history-list" id="naomi-history">
+                    <div class="no-history">正在加载数据...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="btn-toolbar">
+            <button class="btn btn-storage" onclick="saveDataToLocalStorage()">
+                <i class="fas fa-save"></i> 保存数据
+            </button>
+            <button class="btn btn-storage" onclick="resetData()">
+                <i class="fas fa-redo"></i> 重置数据
+            </button>
+        </div>
+    </div>
+    
+    <!-- Deduct Modal -->
+    <div id="deduct-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title"><i class="fas fa-minus-circle"></i> 扣除小红花</div>
+            <div id="deduct-alert" class="alert"></div>
+            
+            <div class="form-group">
+                <label for="deduct-amount">扣除数量</label>
+                <input type="number" id="deduct-amount" min="1" placeholder="请输入扣除数量">
+            </div>
+            
+            <div class="form-group">
+                <label for="deduct-reason">扣除原因</label>
+                <textarea id="deduct-reason" placeholder="请输入扣除原因（例如：弄脏了地板）"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="nadine-password">Nadine密码</label>
+                <div class="password-input">
+                    <input type="password" id="nadine-password" placeholder="请输入Nadine密码">
+                    <button class="toggle-password" onclick="togglePassword('nadine-password')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="naomi-password">Naomi密码</label>
+                <div class="password-input">
+                    <input type="password" id="naomi-password" placeholder="请输入Naomi密码">
+                    <button class="toggle-password" onclick="togglePassword('naomi-password')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-modal btn-cancel" onclick="closeDeductModal()">取消</button>
+                <button class="btn-modal btn-confirm" onclick="deductFlowers()">确认扣除</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Modal -->
+    <div id="add-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title"><i class="fas fa-plus-circle"></i> 增加小红花</div>
+            <div id="add-alert" class="alert"></div>
+            
+            <div class="form-group">
+                <label for="add-amount">增加数量</label>
+                <input type="number" id="add-amount" min="1" placeholder="请输入增加数量">
+            </div>
+            
+            <div class="form-group">
+                <label for="add-reason">增加原因</label>
+                <textarea id="add-reason" placeholder="请输入增加原因（例如：完成了作业）"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="adult-password">管理员密码</label>
+                <div class="password-input">
+                    <input type="password" id="adult-password" placeholder="请输入管理员密码">
+                    <button class="toggle-password" onclick="togglePassword('adult-password')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-modal btn-cancel" onclick="closeAddModal()">取消</button>
+                <button class="btn-modal btn-confirm" onclick="addFlowers()">确认增加</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // =============================================
+        // 系统数据结构
+        // =============================================
+        let state = {
+            currentUser: 'nadine',
+            adultPassword: '123abc',
+            users: {
+                nadine: {
+                    count: 0,
+                    password: 'nadine123',
+                    history: []
+                },
+                naomi: {
+                    count: 0,
+                    password: 'naomi456',
+                    history: []
+                }
+            },
+            pendingActionUser: null
+        };
+        
+        // =============================================
+        // 系统功能函数
+        // =============================================
+        
+        // 初始化标签指示器位置
+        function initTabIndicator() {
+            const tabIndicator = document.getElementById('tab-indicator');
+            const activeTab = document.querySelector('.tab.active');
+            if (activeTab) {
+                const tabWidth = activeTab.offsetWidth;
+                const tabLeft = activeTab.offsetLeft;
+                tabIndicator.style.width = tabWidth + 'px';
+                tabIndicator.style.left = tabLeft + 'px';
+            }
+        }
+        
+        // 渲染操作历史记录（只显示最近5条）
+        function renderHistory(user) {
+            const historyList = document.getElementById(`${user}-history`);
+            historyList.innerHTML = '';
+            
+            // 按时间倒序排序
+            const sortedHistory = [...state.users[user].history].sort((a, b) => new Date(b.time) - new Date(a.time));
+            
+            // 只取最近的5条记录
+            const recentHistory = sortedHistory.slice(0, 5);
+            
+            if (recentHistory.length === 0) {
+                historyList.innerHTML = '<div class="no-history">暂无操作记录</div>';
+                return;
+            }
+            
+            recentHistory.forEach(record => {
+                const historyItem = document.createElement('div');
+                historyItem.className = `history-item ${record.type}`;
+                
+                const amountPrefix = record.type === 'add' ? '+' : '-';
+                
+                historyItem.innerHTML = `
+                    <div class="history-item-header">
+                        <span class="history-type">${record.type === 'add' ? '增加' : '扣减'}</span>
+                        <span class="history-time">${formatDateTime(new Date(record.time))}</span>
+                    </div>
+                    <div class="history-reason">${record.reason}</div>
+                    <div class="history-amount ${record.type}">${amountPrefix}${record.amount} 朵</div>
+                `;
+                
+                historyList.appendChild(historyItem);
+            });
+        }
+        
+        // Tab切换功能
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.tab === tabName);
+            });
+            
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.toggle('active', content.id === tabName + '-content');
+            });
+            
+            state.currentUser = tabName;
+            
+            // 更新标签指示器位置
+            const activeTab = document.querySelector(`.tab[data-tab="${tabName}"]`);
+            const tabIndicator = document.getElementById('tab-indicator');
+            if (activeTab && tabIndicator) {
+                const tabWidth = activeTab.offsetWidth;
+                const tabLeft = activeTab.offsetLeft;
+                tabIndicator.style.width = tabWidth + 'px';
+                tabIndicator.style.left = tabLeft + 'px';
+            }
+        }
+        
+        // 显示扣除小红花的模态框
+        function showDeductModal(user) {
+            state.pendingActionUser = user;
+            document.getElementById('deduct-modal').style.display = 'flex';
+            document.getElementById('deduct-alert').style.display = 'none';
+            document.getElementById('deduct-amount').value = '';
+            document.getElementById('deduct-reason').value = '';
+            document.getElementById('nadine-password').value = '';
+            document.getElementById('naomi-password').value = '';
+        }
+        
+        // 关闭扣除小红花的模态框
+        function closeDeductModal() {
+            document.getElementById('deduct-modal').style.display = 'none';
+        }
+        
+        // 显示增加小红花的模态框
+        function showAddModal(user) {
+            state.pendingActionUser = user;
+            document.getElementById('add-modal').style.display = 'flex';
+            document.getElementById('add-alert').style.display = 'none';
+            document.getElementById('add-amount').value = '';
+            document.getElementById('add-reason').value = '';
+            document.getElementById('adult-password').value = '';
+        }
+        
+        // 关闭增加小红花的模态框
+        function closeAddModal() {
+            document.getElementById('add-modal').style.display = 'none';
+        }
+        
+        // 切换密码可见性
+        function togglePassword(id) {
+            const input = document.getElementById(id);
+            const icon = document.querySelector(`#${id} + .toggle-password i`);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        
+        // 扣除小红花操作
+        function deductFlowers() {
+            const user = state.pendingActionUser;
+            const amount = parseInt(document.getElementById('deduct-amount').value) || 0;
+            const reason = document.getElementById('deduct-reason').value.trim();
+            const nadinePassword = document.getElementById('nadine-password').value;
+            const naomiPassword = document.getElementById('naomi-password').value;
+            const alertElement = document.getElementById('deduct-alert');
+            
+            // 重置警告
+            alertElement.style.display = 'none';
+            
+            // 验证输入
+            if (amount <= 0) {
+                showDeductAlert('请输入有效的扣除数量', 'error');
+                return;
+            }
+            
+            if (!reason) {
+                showDeductAlert('请输入扣除原因', 'error');
+                return;
+            }
+            
+            if (!nadinePassword || !naomiPassword) {
+                showDeductAlert('请输入两位小朋友的密码', 'error');
+                return;
+            }
+            
+            // 密码验证
+            if (nadinePassword !== state.users.nadine.password || naomiPassword !== state.users.naomi.password) {
+                showDeductAlert('有一个密码不正确，请重新输入', 'error');
+                return;
+            }
+            
+            // 检查小红花数量是否足够
+            if (state.users[user].count < amount) {
+                showDeductAlert(`小红花数量不足！当前只有 ${state.users[user].count} 朵`, 'error');
+                return;
+            }
+            
+            // 扣除小红花
+            state.users[user].count -= amount;
+            updateDisplay(user);
+            
+            // 添加操作记录
+            const newRecord = {
+                type: 'deduct',
+                amount: amount,
+                reason: reason,
+                time: new Date().toISOString(),
+                operator: '家长'
+            };
+            state.users[user].history.push(newRecord);
+            
+            // 重新渲染历史记录（只显示最近5条）
+            renderHistory(user);
+            
+            // 保存到本地存储
+            saveDataToLocalStorage();
+            
+            // 显示成功消息
+            showDeductAlert(`成功扣除 ${amount} 朵小红花`, 'success');
+            
+            // 2秒后关闭模态框
+            setTimeout(() => {
+                if (alertElement.classList.contains('alert-success')) {
+                    closeDeductModal();
+                }
+            }, 2000);
+        }
+        
+        function showDeductAlert(message, type) {
+            const alertElement = document.getElementById('deduct-alert');
+            alertElement.textContent = message;
+            alertElement.className = `alert alert-${type}`;
+            alertElement.style.display = 'block';
+        }
+        
+        // 增加小红花操作
+        function addFlowers() {
+            const user = state.pendingActionUser;
+            const amount = parseInt(document.getElementById('add-amount').value) || 0;
+            const reason = document.getElementById('add-reason').value.trim();
+            const adultPassword = document.getElementById('adult-password').value;
+            const alertElement = document.getElementById('add-alert');
+            
+            // 重置警告
+            alertElement.style.display = 'none';
+            
+            // 验证输入
+            if (amount <= 0) {
+                showAddAlert('请输入有效的增加数量', 'error');
+                return;
+            }
+            
+            if (!reason) {
+                showAddAlert('请输入增加原因', 'error');
+                return;
+            }
+            
+            if (!adultPassword) {
+                showAddAlert('请输入管理员密码', 'error');
+                return;
+            }
+            
+            // 密码验证
+            if (adultPassword !== state.adultPassword) {
+                showAddAlert('管理员密码不正确', 'error');
+                return;
+            }
+            
+            // 增加小红花
+            state.users[user].count += amount;
+            updateDisplay(user);
+            
+            // 添加操作记录
+            const newRecord = {
+                type: 'add',
+                amount: amount,
+                reason: reason,
+                time: new Date().toISOString(),
+                operator: '家长'
+            };
+            state.users[user].history.push(newRecord);
+            
+            // 重新渲染历史记录（只显示最近5条）
+            renderHistory(user);
+            
+            // 保存到本地存储
+            saveDataToLocalStorage();
+            
+            // 显示成功消息
+            showAddAlert(`成功增加 ${amount} 朵小红花`, 'success');
+            
+            // 2秒后关闭模态框
+            setTimeout(() => {
+                if (alertElement.classList.contains('alert-success')) {
+                    closeAddModal();
+                }
+            }, 2000);
+        }
+        
+        function showAddAlert(message, type) {
+            const alertElement = document.getElementById('add-alert');
+            alertElement.textContent = message;
+            alertElement.className = `alert alert-${type}`;
+            alertElement.style.display = 'block';
+        }
+        
+        // 更新小红花显示
+        function updateDisplay(user) {
+            document.getElementById(`${user}-count`).textContent = state.users[user].count;
+        }
+        
+        // 格式化日期时间
+        function formatDateTime(date) {
+            return date.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+        }
+        
+        // =============================================
+        // LocalStorage 数据存储功能
+        // =============================================
+        
+        // 保存数据到LocalStorage
+        function saveDataToLocalStorage() {
+            try {
+                localStorage.setItem('flowerSystemData', JSON.stringify(state));
+                updateStorageStatus('已保存', 'connected');
+                showGlobalAlert('数据已保存到本地存储', 'success');
+            } catch (e) {
+                updateStorageStatus('保存失败', 'disconnected');
+                showGlobalAlert('保存失败: ' + e.message, 'error');
+            }
+        }
+        
+        // 从LocalStorage加载数据
+        function loadDataFromLocalStorage() {
+            try {
+                const savedData = localStorage.getItem('flowerSystemData');
+                if (savedData) {
+                    state = JSON.parse(savedData);
+                    updateStorageStatus('已加载', 'connected');
+                    return true;
+                }
+                updateStorageStatus('无保存数据', 'disconnected');
+                return false;
+            } catch (e) {
+                updateStorageStatus('加载失败', 'disconnected');
+                return false;
+            }
+        }
+        
+        // 重置数据
+        function resetData() {
+            if (confirm('确定要重置所有数据吗？这将清除所有小红花记录和操作历史！')) {
+                // 重置为初始状态
+                state = {
+                    currentUser: 'nadine',
+                    adultPassword: 'parent@2023',
+                    users: {
+                        nadine: {
+                            count: 10,
+                            password: 'nadine123',
+                            history: []
+                        },
+                        naomi: {
+                            count: 8,
+                            password: 'naomi456',
+                            history: []
+                        }
+                    },
+                    pendingActionUser: null
+                };
+                
+                // 更新显示
+                updateDisplay('nadine');
+                updateDisplay('naomi');
+                renderHistory('nadine');
+                renderHistory('naomi');
+                
+                // 保存重置后的数据
+                saveDataToLocalStorage();
+                
+                showGlobalAlert('数据已重置', 'success');
+            }
+        }
+        
+        // 更新存储状态显示
+        function updateStorageStatus(message, status) {
+            const statusElement = document.getElementById('storage-status');
+            statusElement.textContent = message;
+            statusElement.className = status;
+        }
+        
+        // 全局提示信息
+        function showGlobalAlert(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            alertDiv.style.position = 'fixed';
+            alertDiv.style.top = '20px';
+            alertDiv.style.left = '50%';
+            alertDiv.style.transform = 'translateX(-50%)';
+            alertDiv.style.padding = '15px 25px';
+            alertDiv.style.borderRadius = '10px';
+            alertDiv.style.zIndex = '9999';
+            alertDiv.style.maxWidth = '90%';
+            alertDiv.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                document.body.removeChild(alertDiv);
+            }, 3000);
+        }
+        
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            initTabIndicator();
+            
+            // 尝试从LocalStorage加载数据
+            const hasSavedData = loadDataFromLocalStorage();
+            
+            // 更新显示
+            updateDisplay('nadine');
+            updateDisplay('naomi');
+            
+            // 渲染历史记录
+            renderHistory('nadine');
+            renderHistory('naomi');
+            
+            // 绑定标签切换事件
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    switchTab(tab.dataset.tab);
+                });
+            });
+            
+            // 如果没有保存的数据，显示初始状态
+            if (!hasSavedData) {
+                showGlobalAlert('欢迎使用小红花管理系统！数据将保存在您的浏览器中。', 'info');
+            }
+        });
+        
+        // 点击模态框外部关闭模态框
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                closeDeductModal();
+                closeAddModal();
+            }
+        };
+    </script>
+</body>
+</html>

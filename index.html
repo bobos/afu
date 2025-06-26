@@ -683,15 +683,7 @@
                 </div>
             </div>
         </div>
-        
-        <div class="btn-toolbar">
-            <button class="btn btn-storage" onclick="saveDataToLocalStorage()">
-                <i class="fas fa-save"></i> 保存数据
-            </button>
-            <button class="btn btn-storage" onclick="resetData()">
-                <i class="fas fa-redo"></i> 重置数据
-            </button>
-        </div>
+
     </div>
     
     <!-- Deduct Modal -->
@@ -981,7 +973,7 @@
                 if (alertElement.classList.contains('alert-success')) {
                     closeDeductModal();
                 }
-            }, 2000);
+            }, 1000);
         }
         
         function showDeductAlert(message, type) {
@@ -1052,7 +1044,7 @@
                 if (alertElement.classList.contains('alert-success')) {
                     closeAddModal();
                 }
-            }, 2000);
+            }, 1000);
         }
         
         function showAddAlert(message, type) {
